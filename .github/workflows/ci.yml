@@ -62,9 +62,11 @@ jobs:
         run: sleep 15
 
       - name: Check posts service
+        working-directory: blog
         run: curl -f http://localhost:4000/posts
 
       - name: Check query service
+        working-directory: blog
         run: curl -f http://localhost:4002/posts
 
       - name: Stop services
