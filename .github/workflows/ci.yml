@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - posts-service
+          - comments-service
+          - moderation-service
+          - query-service
+          - event-bus-service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        working-directory: blog/${{ matrix.service }}
+        run: npm install
+
+      - name: Run tests
+        working-directory: blog/${{ matrix.service }}
+        run: npm test -- --passWithNoTests
+
+      - name: Build Docker image
+        working-directory: blog/${{ matrix.service }}
+        run: docker build -t ${{ matrix.service }} .
