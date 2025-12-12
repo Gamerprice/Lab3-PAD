@@ -1,21 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { randomBytes } = require("crypto");
-const cors = require("cors");
 const axios = require("axios");
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
 
 const posts = {};
 
-// ===== GET POSTS =====
-app.get("/posts", (req, res) => {
-  res.send(posts);
-});
-
-// ===== CREATE POST =====
 app.post("/posts", async (req, res) => {
   const id = randomBytes(4).toString("hex");
   const { title } = req.body;
@@ -30,16 +22,9 @@ app.post("/posts", async (req, res) => {
   res.status(201).send(posts[id]);
 });
 
-// ===== HANDLE EVENTS =====
-app.post("/events", (req, res) => {
-  console.log("Received Event:", req.body.type);
-  res.send({});
-});
-
-// ===== EXPORT FOR TESTS =====
 module.exports = app;
 
-// ===== RUN SERVER ONLY WHEN EXECUTED DIRECTLY =====
+// ⬇️ сервер стартует ТОЛЬКО если не тест
 if (require.main === module) {
   app.listen(4000, () => {
     console.log("Posts service listening on 4000");

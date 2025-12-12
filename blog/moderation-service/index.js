@@ -1,20 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const { moderate } = require("./moderation");
 
 const app = express();
 app.use(bodyParser.json());
 
-// ===== EVENT HANDLER =====
 app.post("/events", async (req, res) => {
   const { type, data } = req.body;
 
   if (type === "CommentCreated") {
-    const status = data.content.includes("orange")
-      ? "rejected"
-      : "approved";
+    const status = moderate(data.content);
 
-    // IMPORTANT: use Docker service name, not localhost
     await axios.post("http://event-bus:4005/events", {
       type: "CommentModerated",
       data: {
@@ -29,12 +26,8 @@ app.post("/events", async (req, res) => {
   res.send({});
 });
 
-// ===== Export for tests =====
-module.exports = app;
+app.listen(4003, () => {
+  console.log("Moderation service listening on 4003");
+});
 
-// ===== Run only when executed directly =====
-if (require.main === module) {
-  app.listen(4003, () => {
-    console.log("Moderation service listening on 4003");
-  });
-}
+module.exports = app;

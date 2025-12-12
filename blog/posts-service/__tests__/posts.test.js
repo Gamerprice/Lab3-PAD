@@ -1,5 +1,10 @@
 const request = require("supertest");
-const app = require("../index"); // экспортируй express() из index.js
+const app = require("../index");
+
+// 🔴 ВАЖНО: мок axios
+jest.mock("axios", () => ({
+  post: jest.fn(() => Promise.resolve({}))
+}));
 
 describe("POSTS SERVICE", () => {
   it("creates a post", async () => {

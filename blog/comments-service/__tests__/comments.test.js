@@ -1,6 +1,10 @@
 const request = require("supertest");
 const app = require("../index");
 
+jest.mock("axios", () => ({
+  post: jest.fn(() => Promise.resolve({}))
+}));
+
 describe("COMMENTS SERVICE", () => {
   it("creates a comment", async () => {
     const response = await request(app)
