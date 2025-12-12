@@ -12,6 +12,7 @@ describe("COMMENTS SERVICE", () => {
       .send({ content: "Hello!" });
 
     expect(response.statusCode).toBe(201);
-    expect(response.body.content).toBe("Hello!");
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].content).toBe("Hello!");
   });
 });
