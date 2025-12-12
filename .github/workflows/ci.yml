@@ -39,3 +39,32 @@ jobs:
       - name: Build Docker image
         working-directory: blog/${{ matrix.service }}
         run: docker build -t ${{ matrix.service }} .
+
+
+          deploy-compose:
+    name: CD – Docker Compose up
+    runs-on: ubuntu-latest
+    needs: test-and-build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build docker images
+        run: docker-compose build
+
+      - name: Start services
+        run: docker-compose up -d
+
+      - name: Wait for services
+        run: sleep 15
+
+      - name: Check posts service
+        run: curl -f http://localhost:4000/posts
+
+      - name: Check query service
+        run: curl -f http://localhost:4002/posts
+
+      - name: Stop services
+        if: always()
+        run: docker-compose down
